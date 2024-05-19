@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma, User } from '@prisma/client'
 import { PrismaService } from 'src/prisma/prisma.service'
 
@@ -28,6 +28,11 @@ export class UsersService {
     id: string,
     data: Partial<Prisma.UserUpdateInput>,
   ): Promise<User> {
+    const user = await this.findOneById(id)
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`)
+    }
+
     const parsedId = parseInt(id, 10)
     return this.prisma.user.update({
       where: { user_id: parsedId },
@@ -36,6 +41,11 @@ export class UsersService {
   }
 
   async delete(id: string): Promise<User> {
+    const user = await this.findOneById(id)
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`)
+    }
+
     const parsedId = parseInt(id, 10)
     return this.prisma.user.delete({
       where: { user_id: parsedId },
