@@ -12,9 +12,15 @@ export class UsersService {
 
   async findOneById(id: string): Promise<User | null> {
     const parsedId = parseInt(id, 10)
-    return this.prisma.user.findUnique({
+
+    const user = await this.prisma.user.findUnique({
       where: { user_id: parsedId },
     })
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`)
+    }
+
+    return user
   }
 
   async findOneByEmail(email: string): Promise<User | null> {
@@ -32,10 +38,7 @@ export class UsersService {
     id: string,
     data: Partial<Prisma.UserUpdateInput>,
   ): Promise<User> {
-    const user = await this.findOneById(id)
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`)
-    }
+    await this.findOneById(id)
 
     const parsedId = parseInt(id, 10)
     return this.prisma.user.update({
@@ -45,10 +48,7 @@ export class UsersService {
   }
 
   async delete(id: string): Promise<User> {
-    const user = await this.findOneById(id)
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`)
-    }
+    await this.findOneById(id)
 
     const parsedId = parseInt(id, 10)
     return this.prisma.user.delete({

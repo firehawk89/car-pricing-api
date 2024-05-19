@@ -18,15 +18,14 @@ import { UpdateUserDTO } from './dto/update-user.dto'
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Get()
-  getUsers() {
-    return this.usersService.findAll()
-  }
-
   @ApiQuery({ name: 'email', required: false })
   @Get()
-  getUserByEmail(@Query('email') email: string) {
-    return this.usersService.findOneByEmail(email)
+  getUsers(@Query('email') email: string) {
+    if (email) {
+      return this.usersService.findOneByEmail(email)
+    }
+
+    return this.usersService.findAll()
   }
 
   @Get(':id')
