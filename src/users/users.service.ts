@@ -20,9 +20,16 @@ export class UsersService {
 
   async create(data: Prisma.UserCreateInput): Promise<User> {
     const { email, password } = data
+    return this.prisma.user.create({ data: { email, password } })
+  }
 
-    return this.prisma.user.create({
-      data: { email, password },
+  async update(
+    id: number,
+    data: Partial<Prisma.UserUpdateInput>,
+  ): Promise<User> {
+    return this.prisma.user.update({
+      where: { user_id: id },
+      data,
     })
   }
 }
