@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -25,8 +26,7 @@ export class UsersController {
 
   @Get(':id')
   getUserById(@Param('id') id: string) {
-    const parsedId = parseInt(id, 10)
-    return this.usersService.findOneById(parsedId)
+    return this.usersService.findOneById(id)
   }
 
   @Post('signup')
@@ -36,7 +36,11 @@ export class UsersController {
 
   @Patch(':id')
   updateUser(@Param('id') id: string, @Body() body: UpdateUserDTO) {
-    const parsedId = parseInt(id, 10)
-    return this.usersService.update(parsedId, body)
+    return this.usersService.update(id, body)
+  }
+
+  @Delete(':id')
+  deleteUser(@Param('id') id: string) {
+    return this.usersService.delete(id)
   }
 }
