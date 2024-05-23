@@ -1,13 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { Prisma } from '@prisma/client'
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
 
 export class CreateUserDTO {
   @ApiProperty()
   @IsEmail()
-  email: string
+  [Prisma.UserScalarFieldEnum.email]: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  password: string
+  [Prisma.UserScalarFieldEnum.password]: string
 }
