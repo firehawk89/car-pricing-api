@@ -13,9 +13,12 @@ import { CreateUserDTO } from './dto/create-user.dto'
 import { ApiQuery, ApiTags } from '@nestjs/swagger'
 import { UsersService } from './users.service'
 import { UpdateUserDTO } from './dto/update-user.dto'
+import { Serialize } from 'src/interceptors/serialize.interceptor'
+import { UserDTO } from './dto/user.dto'
 
 @ApiTags('auth')
 @Controller('auth')
+@Serialize(UserDTO)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -30,7 +33,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  async getUserById(@Param('id') id: string) {
+  async getUser(@Param('id') id: string) {
     const user = await this.usersService.findOneById(id)
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`)
