@@ -11,6 +11,9 @@ import { promisify } from 'util'
 
 const scrypt = promisify(_scrypt)
 
+const SALT_LENGTH = 16
+const KEY_LENGTH = 32
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -26,8 +29,8 @@ export class AuthService {
       throw new BadRequestException(`User with email ${email} already exists`)
     }
 
-    const salt = randomBytes(16)
-    const key = (await scrypt(password, salt, 32)) as Buffer
+    const salt = randomBytes(SALT_LENGTH)
+    const key = (await scrypt(password, salt, KEY_LENGTH)) as Buffer
 
     const result = salt.toString('hex') + '.' + key.toString('hex')
 
@@ -43,7 +46,11 @@ export class AuthService {
     }
 
     const [salt, storedKey] = user.password.split('.')
-    const key = (await scrypt(password, salt, 32)) as Buffer
+    const key = (await scrypt(
+      password,
+      Buffer.from(salt, 'hex'),
+      KEY_LENGTH,
+    )) as Buffer
 
     if (key.toString('hex') !== storedKey) {
       throw new BadRequestException('Invalid password')
