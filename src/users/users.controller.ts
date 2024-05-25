@@ -15,12 +15,16 @@ import { UsersService } from './users.service'
 import { UpdateUserDTO } from './dto/update-user.dto'
 import { Serialize } from 'src/interceptors/serialize.interceptor'
 import { UserDTO } from './dto/user.dto'
+import { AuthService } from './auth.service'
 
 @ApiTags('auth')
 @Controller('auth')
 @Serialize(UserDTO)
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private authService: AuthService,
+  ) {}
 
   @ApiQuery({ name: 'email', required: false })
   @Get()
@@ -44,7 +48,7 @@ export class UsersController {
 
   @Post('signup')
   createUser(@Body() body: CreateUserDTO) {
-    return this.usersService.create(body)
+    return this.authService.register(body)
   }
 
   @Patch(':id')
