@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { Prisma, User } from '@prisma/client'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { UsersService } from './users.service'
@@ -17,8 +21,8 @@ export class AuthService {
   async register(data: Prisma.UserCreateInput): Promise<User> {
     const { email, password } = data
 
-    const userExists = await this.usersService.findOneByEmail(email)
-    if (!!userExists) {
+    const user = await this.usersService.findOneByEmail(email)
+    if (!!user) {
       throw new BadRequestException(`User with email ${email} already exists`)
     }
 
@@ -30,5 +34,21 @@ export class AuthService {
     return this.prisma.user.create({ data: { email, password: result } })
   }
 
-  //   async authenticate(data: Partial<User>): Promise<User> {}
+  async authenticate(data: Omit<User, 'user_id'>): Promise<User> {
+    const { email, password } = data
+
+    const user = await this.usersService.findOneByEmail(email)
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`)
+    }
+
+    const [salt, storedKey] = user.password.split('.')
+    const key = (await scrypt(password, salt, 32)) as Buffer
+
+    if (key.toString('hex') !== storedKey) {
+      throw new BadRequestException('Invalid password')
+    }
+
+    return user
+  }
 }
