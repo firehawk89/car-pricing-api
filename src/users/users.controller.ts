@@ -41,9 +41,10 @@ export class UsersController {
 
   @Get('whoami')
   whoAmI(@Session() session: Record<string, any>) {
-	if (!session.userId) {
-		throw new UnauthorizedException('User not found')
-	}
+    if (!session.userId) {
+      throw new UnauthorizedException('User not authenticated')
+    }
+
     return this.usersService.findOneById(session.userId)
   }
 
@@ -75,6 +76,11 @@ export class UsersController {
     const user = await this.authService.authenticate(body)
     session.userId = user.user_id
     return user
+  }
+
+  @Post('signout')
+  async signOutUser(@Session() session: Record<string, any>) {
+    session.userId = null
   }
 
   @Patch(':id')
