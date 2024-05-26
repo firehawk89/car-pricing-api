@@ -10,6 +10,7 @@ import {
   Query,
   Session,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common'
 import { CreateUserDTO } from './dto/create-user.dto'
 import { ApiQuery, ApiTags } from '@nestjs/swagger'
@@ -20,6 +21,7 @@ import { UserDTO } from './dto/user.dto'
 import { AuthService } from './auth.service'
 import { AuthenticateUserDTO } from './dto/authenticate-user.dto'
 import { CurrentUser } from './decorators/current-user.decorator'
+import { AuthGuard } from 'src/guards/auth.guard'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -41,6 +43,7 @@ export class UsersController {
   }
 
   @Get('whoami')
+  @UseGuards(AuthGuard)
   whoAmI(@CurrentUser() user: UserDTO) {
     return user
   }
