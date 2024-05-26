@@ -8,6 +8,8 @@ import {
   Patch,
   Post,
   Query,
+  Session,
+  UnauthorizedException,
 } from '@nestjs/common'
 import { CreateUserDTO } from './dto/create-user.dto'
 import { ApiQuery, ApiTags } from '@nestjs/swagger'
@@ -37,6 +39,14 @@ export class UsersController {
     return this.usersService.findAll()
   }
 
+  @Get('whoami')
+  whoAmI(@Session() session: Record<string, any>) {
+	if (!session.userId) {
+		throw new UnauthorizedException('User not found')
+	}
+    return this.usersService.findOneById(session.userId)
+  }
+
   @Get(':id')
   async getUser(@Param('id') id: string) {
     const user = await this.usersService.findOneById(id)
@@ -48,13 +58,23 @@ export class UsersController {
   }
 
   @Post('signup')
-  createUser(@Body() body: CreateUserDTO) {
-    return this.authService.register(body)
+  async createUser(
+    @Body() body: CreateUserDTO,
+    @Session() session: Record<string, any>,
+  ) {
+    const user = await this.authService.register(body)
+    session.userId = user.user_id
+    return user
   }
 
   @Post('signin')
-  authenticateUser(@Body() body: AuthenticateUserDTO) {
-    return this.authService.authenticate(body)
+  async authenticateUser(
+    @Body() body: AuthenticateUserDTO,
+    @Session() session: Record<string, any>,
+  ) {
+    const user = await this.authService.authenticate(body)
+    session.userId = user.user_id
+    return user
   }
 
   @Patch(':id')
