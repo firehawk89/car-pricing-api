@@ -19,6 +19,7 @@ import { Serialize } from 'src/interceptors/serialize.interceptor'
 import { UserDTO } from './dto/user.dto'
 import { AuthService } from './auth.service'
 import { AuthenticateUserDTO } from './dto/authenticate-user.dto'
+import { CurrentUser } from './decorators/current-user.decorator'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -40,12 +41,8 @@ export class UsersController {
   }
 
   @Get('whoami')
-  whoAmI(@Session() session: Record<string, any>) {
-    if (!session.userId) {
-      throw new UnauthorizedException('User not authenticated')
-    }
-
-    return this.usersService.findOneById(session.userId)
+  whoAmI(@CurrentUser() user: UserDTO) {
+    return user
   }
 
   @Get(':id')
