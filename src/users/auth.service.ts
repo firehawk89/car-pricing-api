@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 import { Prisma, User } from '@prisma/client'
-import { PrismaService } from 'src/prisma/prisma.service'
 import { UsersService } from './users.service'
 import { randomBytes, scrypt as _scrypt } from 'crypto'
 import { promisify } from 'util'
@@ -16,10 +15,7 @@ const KEY_LENGTH = 32
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private prisma: PrismaService,
-    private usersService: UsersService,
-  ) {}
+  constructor(private usersService: UsersService) {}
 
   async register(data: Prisma.UserCreateInput): Promise<User> {
     const { email, password } = data
@@ -34,7 +30,7 @@ export class AuthService {
 
     const result = salt.toString('hex') + '.' + key.toString('hex')
 
-    return this.prisma.user.create({ data: { email, password: result } })
+    return this.usersService.create({ email, password: result })
   }
 
   async authenticate(data: Omit<User, 'user_id'>): Promise<User> {
