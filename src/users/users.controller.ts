@@ -9,7 +9,6 @@ import {
   Post,
   Query,
   Session,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common'
 import { CreateUserDTO } from './dto/create-user.dto'
