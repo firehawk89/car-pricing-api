@@ -8,17 +8,17 @@ const FAKE_EMAIL = 'testing_user@email.com'
 const FAKE_PASSWORD = 'testing_user'
 
 describe('UsersController', () => {
+  let users: User[] = [
+    { user_id: 1, email: `1_${FAKE_EMAIL}`, password: FAKE_PASSWORD },
+    { user_id: 2, email: `2_${FAKE_EMAIL}`, password: FAKE_PASSWORD },
+    { user_id: 3, email: `3_${FAKE_EMAIL}`, password: FAKE_PASSWORD },
+  ]
+
   let usersController: UsersController
   let fakeUsersService: Partial<UsersService>
   let fakeAuthService: Partial<AuthService>
 
   beforeEach(async () => {
-    let users: User[] = [
-      { user_id: 1, email: `1_${FAKE_EMAIL}`, password: FAKE_PASSWORD },
-      { user_id: 2, email: `2_${FAKE_EMAIL}`, password: FAKE_PASSWORD },
-      { user_id: 3, email: `3_${FAKE_EMAIL}`, password: FAKE_PASSWORD },
-    ]
-
     fakeUsersService = {
       findAll: () => {
         return Promise.resolve(users)
@@ -68,5 +68,10 @@ describe('UsersController', () => {
 
   it('should be defined', () => {
     expect(usersController).toBeDefined()
+  })
+
+  it('should return all users', async () => {
+    const foundUsers = await usersController.getUsers()
+    expect(foundUsers).toEqual(users)
   })
 })
