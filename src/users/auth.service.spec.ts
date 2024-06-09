@@ -73,4 +73,20 @@ describe('AuthService', () => {
       }),
     ).rejects.toThrow(NotFoundException)
   })
+
+  it('throws an error if user tries to sign in with a wrong password', async () => {
+    fakeUsersService.findOneByEmail = () =>
+      Promise.resolve({
+        user_id: 1,
+        email: fakeEmail,
+        password: fakePassword,
+      })
+
+    await expect(
+      authService.authenticate({
+        email: fakeEmail,
+        password: 'wrong_password',
+      }),
+    ).rejects.toThrow(BadRequestException)
+  })
 })
