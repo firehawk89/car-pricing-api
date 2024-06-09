@@ -3,6 +3,7 @@ import { UsersController } from './users.controller'
 import { UsersService } from './users.service'
 import { Prisma, User } from '@prisma/client'
 import { AuthService } from './auth.service'
+import { NotFoundException } from '@nestjs/common'
 
 const FAKE_EMAIL = 'testing_user@email.com'
 const FAKE_PASSWORD = 'testing_user'
@@ -79,6 +80,11 @@ describe('UsersController', () => {
     const email = `1_${FAKE_EMAIL}`
     const user = (await usersController.getUsers(email)) as User
     expect(user.email).toEqual(email)
+  })
+
+  it('throws an error if user is not found by ID', async () => {
+    const id = (users[users.length - 1].user_id + 1).toString()
+    await expect(usersController.getUser(id)).rejects.toThrow(NotFoundException)
   })
 
   it('should return a user by ID', async () => {
