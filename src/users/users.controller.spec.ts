@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { UsersController } from './users.controller'
 import { UsersService } from './users.service'
 import { Prisma, User } from '@prisma/client'
+import { AuthService } from './auth.service'
 
 const FAKE_EMAIL = 'testing_user@email.com'
 const FAKE_PASSWORD = 'testing_user'
@@ -9,6 +10,7 @@ const FAKE_PASSWORD = 'testing_user'
 describe('UsersController', () => {
   let usersController: UsersController
   let fakeUsersService: Partial<UsersService>
+  let fakeAuthService: Partial<AuthService>
 
   beforeEach(async () => {
     let users: User[] = [
@@ -48,9 +50,17 @@ describe('UsersController', () => {
       },
     }
 
+    fakeAuthService = {
+      register: () => null,
+      authenticate: () => null,
+    }
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [{ provide: UsersService, useValue: fakeUsersService }],
+      providers: [
+        { provide: UsersService, useValue: fakeUsersService },
+        { provide: AuthService, useValue: fakeAuthService },
+      ],
     }).compile()
 
     usersController = module.get<UsersController>(UsersController)
