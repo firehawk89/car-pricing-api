@@ -74,4 +74,10 @@ describe('UsersController', () => {
     const foundUsers = await usersController.getUsers()
     expect(foundUsers).toEqual(users)
   })
+
+  it('should return a user by email', async () => {
+    const email = `1_${FAKE_EMAIL}`
+    const user = (await usersController.getUsers(email)) as User
+    expect(user.email).toEqual(email)
+  })
 })

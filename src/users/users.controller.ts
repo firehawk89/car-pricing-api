@@ -33,7 +33,7 @@ export class UsersController {
 
   @ApiQuery({ name: 'email', required: false })
   @Get()
-  getUsers(@Query('email') email: string) {
+  getUsers(@Query('email') email?: string) {
     if (email) {
       return this.usersService.findOneByEmail(email)
     }
