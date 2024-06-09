@@ -80,4 +80,10 @@ describe('UsersController', () => {
     const user = (await usersController.getUsers(email)) as User
     expect(user.email).toEqual(email)
   })
+
+  it('should return a user by ID', async () => {
+    const id = users[0].user_id.toString()
+    const user = await usersController.getUser(id)
+    expect(user).toBeDefined()
+  })
 })
