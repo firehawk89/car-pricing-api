@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing'
 import { AuthService } from './auth.service'
 import { UsersService } from './users.service'
-import { Prisma } from '@prisma/client'
+import { Prisma, User } from '@prisma/client'
 import { BadRequestException, NotFoundException } from '@nestjs/common'
 
 describe('AuthService', () => {
@@ -12,14 +12,19 @@ describe('AuthService', () => {
   const fakePassword = 'testing_user'
 
   beforeEach(async () => {
+    const users: User[] = []
+
     fakeUsersService = {
-      findOneByEmail: () => Promise.resolve(null),
-      create: ({ email, password }: Prisma.UserCreateInput) =>
-        Promise.resolve({
-          user_id: 1,
-          email,
-          password,
-        }),
+      findOneByEmail: (email: string) => {
+        const user = users.find((user) => user.email === email)
+        return Promise.resolve(user)
+      },
+      create: ({ email, password }: Prisma.UserCreateInput) => {
+        const id = Math.floor(Math.random() * 1000)
+        const user: User = { user_id: id, email, password }
+        users.push(user)
+        return Promise.resolve(user)
+      },
     }
 
     const module = await Test.createTestingModule({
@@ -37,12 +42,10 @@ describe('AuthService', () => {
   })
 
   it('throws an error if user tries to register with an email that is in use', async () => {
-    fakeUsersService.findOneByEmail = () =>
-      Promise.resolve({
-        user_id: 1,
-        email: fakeEmail,
-        password: fakePassword,
-      })
+    await authService.register({
+      email: fakeEmail,
+      password: fakePassword,
+    })
 
     await expect(
       authService.register({
@@ -75,18 +78,29 @@ describe('AuthService', () => {
   })
 
   it('throws an error if user tries to sign in with a wrong password', async () => {
-    fakeUsersService.findOneByEmail = () =>
-      Promise.resolve({
-        user_id: 1,
-        email: fakeEmail,
-        password: fakePassword,
-      })
+    const wrongPassword = 'wrong_password'
+
+    await authService.register({
+      email: fakeEmail,
+      password: fakePassword,
+    })
 
     await expect(
       authService.authenticate({
         email: fakeEmail,
-        password: 'wrong_password',
+        password: wrongPassword,
       }),
     ).rejects.toThrow(BadRequestException)
+  })
+
+  it('returns a user if password is correct', async () => {
+    await authService.register({ email: fakeEmail, password: fakePassword })
+
+    const user = await authService.authenticate({
+      email: fakeEmail,
+      password: fakePassword,
+    })
+
+    expect(user).toBeDefined()
   })
 })
