@@ -35,12 +35,13 @@ describe('UsersController', () => {
       },
       update: (id: string, data: Partial<Prisma.UserUpdateInput>) => {
         const parsedId = parseInt(id, 10)
-        let user = users.find((user) => user.user_id === parsedId)
+        let user = users.find((u) => u.user_id === parsedId)
         user = {
           ...user,
           email: data.email as string,
           password: data.password as string,
         }
+        users = users.map((u) => (u.user_id === parsedId ? user : u))
         return Promise.resolve(user)
       },
       delete: (id: string) => {
@@ -91,5 +92,19 @@ describe('UsersController', () => {
     const id = users[0].user_id.toString()
     const user = await usersController.getUser(id)
     expect(user).toBeDefined()
+  })
+
+  it('should update a user', async () => {
+    const id = users[0].user_id.toString()
+    const newEmail = 'new_email'
+    const newPassword = 'new_password'
+
+    const user = await usersController.updateUser(id, {
+      email: newEmail,
+      password: newPassword,
+    })
+
+    expect(user.email).toEqual(newEmail)
+    expect(user.email).toEqual(newPassword)
   })
 })
