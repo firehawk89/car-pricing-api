@@ -95,7 +95,9 @@ describe('UsersController', () => {
   })
 
   it('should update a user', async () => {
-    const id = users[0].user_id.toString()
+    const userFromList = users[0]
+    const id = userFromList.user_id.toString()
+
     const newEmail = 'new_email'
     const newPassword = 'new_password'
 
@@ -105,6 +107,18 @@ describe('UsersController', () => {
     })
 
     expect(user.email).toEqual(newEmail)
-    expect(user.email).toEqual(newPassword)
+    expect(user.password).toEqual(newPassword)
+    expect(userFromList.email).toEqual(newEmail)
+    expect(userFromList.password).toEqual(newPassword)
+  })
+
+  it('should delete a user', async () => {
+    const id = users[0].user_id.toString()
+
+    const user = await usersController.deleteUser(id)
+    const userFromList = users.find((u) => u.user_id === user.user_id)
+
+    expect(user).toBeDefined()
+    expect(userFromList).toBeUndefined()
   })
 })
