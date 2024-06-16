@@ -54,7 +54,10 @@ describe('UsersController', () => {
 
     fakeAuthService = {
       register: () => null,
-      authenticate: () => null,
+      authenticate: () => {
+        const user = users[users.length - 1]
+        return Promise.resolve(user)
+      },
     }
 
     const module: TestingModule = await Test.createTestingModule({
@@ -120,5 +123,17 @@ describe('UsersController', () => {
 
     expect(user).toBeDefined()
     expect(userFromList).toBeUndefined()
+  })
+
+  it('should authenticate a user', async () => {
+    const session = { userId: -1 }
+    const userFromList = users[users.length - 1]
+    const user = await usersController.authenticateUser(
+      { email: userFromList.email, password: userFromList.password },
+      session,
+    )
+
+    expect(user.user_id).toEqual(userFromList.user_id)
+    expect(session.userId).toEqual(userFromList.user_id)
   })
 })
