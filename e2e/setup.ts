@@ -4,11 +4,11 @@ import { join } from 'path'
 import { promisify } from 'util'
 
 const execPromise = promisify(exec)
-const dbPath = join(__dirname, '../prisma/test.db')
+const dbPath = join(__dirname, '..', 'prisma/test.db')
 
 global.beforeEach(async () => {
   try {
-    await rm(dbPath, { force: true })
+    await rm(dbPath)
   } catch (error) {
     console.error(
       'Failed to clear the test.db file or file does not exist',
