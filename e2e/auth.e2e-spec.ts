@@ -21,14 +21,31 @@ describe('Authentication System', () => {
   it('handles a signup request', async () => {
     const body = { email: FAKE_EMAIL, password: FAKE_PASSWORD }
 
-    return request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/auth/signup')
       .send(body)
       .expect(201)
-      .then((res) => {
-        const { user_id, email } = res.body
-        expect(user_id).toBeDefined()
-        expect(email).toEqual(FAKE_EMAIL)
-      })
+
+    const { user_id, email } = response.body
+    expect(user_id).toBeDefined()
+    expect(email).toEqual(FAKE_EMAIL)
+  })
+
+  it('handles a whoami request after signup', async () => {
+    const email = `2${FAKE_EMAIL}`
+    const body = { email, password: FAKE_PASSWORD }
+
+    const signupResponse = await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send(body)
+      .expect(201)
+    const cookie = signupResponse.get('Set-Cookie')
+
+    const whoamiResponse = await request(app.getHttpServer())
+      .get('/auth/whoami')
+      .set('Cookie', cookie)
+      .expect(200)
+
+    expect(whoamiResponse.body.email).toEqual(email)
   })
 })
