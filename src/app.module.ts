@@ -7,10 +7,19 @@ import { UsersModule } from './users/users.module'
 import { ReportsModule } from './reports/reports.module'
 import { PrismaModule } from './prisma/prisma.module'
 import { APP_PIPE } from '@nestjs/core'
+import { ConfigModule } from '@nestjs/config'
 const session = require('express-session')
 
 @Module({
-  imports: [PrismaModule, UsersModule, ReportsModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV}.local`,
+    }),
+    PrismaModule,
+    UsersModule,
+    ReportsModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
