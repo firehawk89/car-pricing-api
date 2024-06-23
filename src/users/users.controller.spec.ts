@@ -4,9 +4,7 @@ import { UsersService } from './users.service'
 import { Prisma, User } from '@prisma/client'
 import { AuthService } from './auth.service'
 import { NotFoundException } from '@nestjs/common'
-
-const FAKE_EMAIL = 'testing_user@email.com'
-const FAKE_PASSWORD = 'testing_user'
+import { FAKE_EMAIL, FAKE_PASSWORD } from 'src/utils/constants'
 
 describe('UsersController', () => {
   let users: User[] = [

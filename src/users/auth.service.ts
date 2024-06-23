@@ -7,11 +7,9 @@ import { Prisma, User } from '@prisma/client'
 import { UsersService } from './users.service'
 import { randomBytes, scrypt as _scrypt } from 'crypto'
 import { promisify } from 'util'
+import { KEY_LENGTH, SALT_LENGTH } from 'src/utils/constants'
 
 const scrypt = promisify(_scrypt)
-
-const SALT_LENGTH = 16
-const KEY_LENGTH = 32
 
 @Injectable()
 export class AuthService {
