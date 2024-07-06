@@ -18,6 +18,7 @@ model Report {
   report_id    Int     @id @default(autoincrement())
   user         User    @relation(fields: [user_id], references: [user_id])
   user_id      Int
+  approved	   Boolean @default(false)
   price        Decimal
   manufacturer String
   model        String
