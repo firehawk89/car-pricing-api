@@ -16,7 +16,7 @@ model User {
 
 model Report {
   report_id    Int     @id @default(autoincrement())
-  author       User    @relation(fields: [user_id], references: [user_id])
+  user         User    @relation(fields: [user_id], references: [user_id])
   user_id      Int
   price        Decimal
   manufacturer String
