@@ -8,6 +8,7 @@ import { UsersService } from './users.service'
 import { randomBytes, scrypt as _scrypt } from 'crypto'
 import { promisify } from 'util'
 import { KEY_LENGTH, SALT_LENGTH } from 'src/utils/constants'
+import { AuthenticateUserDTO } from './dto/authenticate-user.dto'
 
 const scrypt = promisify(_scrypt)
 
@@ -31,7 +32,7 @@ export class AuthService {
     return this.usersService.create({ email, password: result })
   }
 
-  async authenticate(data: Omit<User, 'user_id'>): Promise<User> {
+  async authenticate(data: AuthenticateUserDTO): Promise<User> {
     const { email, password } = data
 
     const user = await this.usersService.findOneByEmail(email)
