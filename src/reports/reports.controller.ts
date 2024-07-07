@@ -14,6 +14,7 @@ import { AuthGuard } from 'src/guards/auth.guard'
 import { CurrentUser } from 'src/users/decorators/current-user.decorator'
 import { UserDTO } from 'src/users/dto/user.dto'
 import { ApproveReportDTO } from './dto/approve-report.dto'
+import { AdminGuard } from 'src/guards/admin.guard'
 
 @ApiTags('reports')
 @UseGuards(AuthGuard)
@@ -29,6 +30,7 @@ export class ReportsController {
     return this.reportsService.create(body, user)
   }
 
+  @UseGuards(AdminGuard)
   @Patch(':id')
   async approveReport(@Param('id') id: string, @Body() body: ApproveReportDTO) {
     const report = await this.reportsService.findOneById(id)
